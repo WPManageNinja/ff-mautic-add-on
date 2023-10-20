@@ -19,17 +19,15 @@ class Bootstrap extends IntegrationManager
             36
         );
 
-
-        $this->logo = $this->app->url('public/img/integrations/mautic.png');
+        $this->logo = fluentFormMix('img/integrations/mautic.png');
 
         $this->description = 'Mautic is a fully-featured marketing automation platform that enables organizations of all sizes to send multi-channel communications at scale.';
 
         $this->registerAdminHooks();
 
+//        add_filter('fluentform_notifying_async_mautic', '__return_false');
 
-        add_filter('fluentform_notifying_async_mautic', '__return_false');
-
-        add_action('admin_init', function () {
+        add_action('admin_init', function() {
             if (isset($_REQUEST['ff_mautic_auth'])) {
                 $client = $this->getRemoteClient();
                 if (isset($_REQUEST['code'])) {
@@ -58,43 +56,45 @@ class Bootstrap extends IntegrationManager
     public function getGlobalFields($fields)
     {
         return [
-            'logo' => $this->logo,
-            'menu_title' => __('Mautic Settings', 'ffmauticaddon'),
-            'menu_description' => $this->description,
-            'valid_message' => __('Your Mautic API Key is valid', 'ffmauticaddon'),
-            'invalid_message' => __('Your Mautic API Key is not valid', 'ffmauticaddon'),
-            'save_button_text' => __('Save Settings', 'ffmauticaddon'),
+            'logo'               => $this->logo,
+            'menu_title'         => __('Mautic Settings', 'ffmauticaddon'),
+            'menu_description'   => $this->description,
+            'valid_message'      => __('Your Mautic API Key is valid', 'ffmauticaddon'),
+            'invalid_message'    => __('Your Mautic API Key is not valid', 'ffmauticaddon'),
+            'save_button_text'   => __('Save Settings', 'ffmauticaddon'),
             'config_instruction' => $this->getConfigInstractions(),
-            'fields' => [
-                'apiUrl' => [
-                    'type' => 'text',
+            'fields'             => [
+                'apiUrl'        => [
+                    'type'        => 'text',
                     'placeholder' => 'Your Mautic Installation URL',
-                    'label_tips' => __("Please provide your Mautic Installation URL", 'ffmauticaddon'),
-                    'label' => __('Your Moutic API URL', 'ffmauticaddon'),
+                    'label_tips'  => __("Please provide your Mautic Installation URL", 'ffmauticaddon'),
+                    'label'       => __('Your Mautic API URL', 'ffmauticaddon'),
                 ],
-                'client_id' => [
-                    'type' => 'text',
+                'client_id'     => [
+                    'type'        => 'text',
                     'placeholder' => 'Mautic App Client ID',
-                    'label_tips' => __("Enter your Mautic Client ID, if you do not have <br>Please login to your Mautic account and go to<br>Settings -> Integrations -> API key", 'ffmauticaddon'),
-                    'label' => __('Mautic Client ID', 'ffmauticaddon'),
+                    'label_tips'  => __("Enter your Mautic Client ID, if you do not have <br>Please login to your Mautic account and go to<br>Settings -> Integrations -> API key",
+                        'ffmauticaddon'),
+                    'label'       => __('Mautic Client ID', 'ffmauticaddon'),
                 ],
                 'client_secret' => [
-                    'type' => 'password',
+                    'type'        => 'password',
                     'placeholder' => 'Mautic App Client Secret',
-                    'label_tips' => __("Enter your Mautic API Key, if you do not have <br>Please login to your Mautic account and go to<br>Settings -> Integrations -> API key", 'ffmauticaddon'),
-                    'label' => __('Mautic Client Secret', 'ffmauticaddon'),
+                    'label_tips'  => __("Enter your Mautic API Key, if you do not have <br>Please login to your Mautic account and go to<br>Settings -> Integrations -> API key",
+                        'ffmauticaddon'),
+                    'label'       => __('Mautic Client Secret', 'ffmauticaddon'),
                 ],
             ],
-            'hide_on_valid' => true,
-            'discard_settings' => [
-                'section_description' => 'Your Mautic API integration is up and running',
-                'button_text' => 'Disconnect Mautic',
-                'data' => [
-                    'apiUrl' => '',
-                    'client_id' => '',
+            'hide_on_valid'      => true,
+            'discard_settings'   => [
+                'section_description' => __('Your Mautic API integration is up and running', 'ffmauticaddon'),
+                'button_text'         => __('Disconnect Mautic', 'ffmauticaddon'),
+                'data'                => [
+                    'apiUrl'        => '',
+                    'client_id'     => '',
                     'client_secret' => ''
                 ],
-                'show_verify' => true
+                'show_verify'         => true
             ]
         ];
     }
@@ -106,13 +106,13 @@ class Bootstrap extends IntegrationManager
             $globalSettings = [];
         }
         $defaults = [
-            'apiUrl' => '',
-            'client_id' => '',
+            'apiUrl'        => '',
+            'client_id'     => '',
             'client_secret' => '',
-            'status' => '',
-            'access_token' => '',
+            'status'        => '',
+            'access_token'  => '',
             'refresh_token' => '',
-            'expire_at' => false
+            'expire_at'     => false
         ];
 
         return wp_parse_args($globalSettings, $defaults);
@@ -122,16 +122,16 @@ class Bootstrap extends IntegrationManager
     {
         if (empty($settings['apiUrl'])) {
             $integrationSettings = [
-                'apiUrl' => '',
-                'client_id' => '',
+                'apiUrl'        => '',
+                'client_id'     => '',
                 'client_secret' => '',
-                'status' => false
+                'status'        => false
             ];
             // Update the details with siteKey & secretKey.
             update_option($this->optionKey, $integrationSettings, 'no');
             wp_send_json_success([
                 'message' => __('Your settings has been updated', 'ffmauticaddon'),
-                'status' => false
+                'status'  => false
             ], 200);
         }
 
@@ -145,7 +145,7 @@ class Bootstrap extends IntegrationManager
 
             update_option($this->optionKey, $oldSettings, 'no');
             wp_send_json_success([
-                'message' => 'You are redirect to athenticate',
+                'message'      => __('You are redirect to authenticate', 'ffmauticaddon'),
                 'redirect_url' => admin_url('?ff_mautic_auth=1')
             ], 200);
         } catch (\Exception $exception) {
@@ -158,13 +158,13 @@ class Bootstrap extends IntegrationManager
     public function pushIntegration($integrations, $formId)
     {
         $integrations[$this->integrationKey] = [
-            'title' => $this->title . ' Integration',
-            'logo' => $this->logo,
-            'is_active' => $this->isConfigured(),
-            'configure_title' => 'Configuration required!',
-            'global_configure_url' => admin_url('admin.php?page=fluent_forms_settings#general-mautic-settings'),
-            'configure_message' => 'Mautic is not configured yet! Please configure your Mautic api first',
-            'configure_button_text' => 'Set Mautic API'
+            'title'                 => $this->title . ' Integration',
+            'logo'                  => $this->logo,
+            'is_active'             => $this->isConfigured(),
+            'configure_title'       => __('Configuration required!','ffmauticaddon'),
+            'global_configure_url'  => admin_url('admin.php?page=fluent_forms_settings#general-mautic-settings'),
+            'configure_message'     => __('Mautic is not configured yet! Please configure your Mautic api first', 'ffmauticaddon'),
+            'configure_button_text' => __('Set Mautic API', 'ffmauticaddon')
         ];
         return $integrations;
     }
@@ -172,95 +172,95 @@ class Bootstrap extends IntegrationManager
     public function getIntegrationDefaults($settings, $formId)
     {
         return [
-            'name' => '',
-            'list_id' => '',
-            'fields' => (object)[],
+            'name'                 => '',
+            'list_id'              => '',
+            'fields'               => (object)[],
             'other_fields_mapping' => [
                 [
                     'item_value' => '',
-                    'label' => ''
+                    'label'      => ''
                 ]
             ],
-            'conditionals' => [
+            'conditionals'         => [
                 'conditions' => [],
-                'status' => false,
-                'type' => 'all'
+                'status'     => false,
+                'type'       => 'all'
             ],
-            'resubscribe' => false,
-            'enabled' => true
+            'resubscribe'          => false,
+            'enabled'              => true
         ];
     }
 
     public function getSettingsFields($settings, $formId)
     {
         return [
-            'fields' => [
+            'fields'            => [
                 [
-                    'key' => 'name',
-                    'label' => 'Feed Name',
-                    'required' => true,
-                    'placeholder' => 'Your Feed Name',
-                    'component' => 'text'
+                    'key'         => 'name',
+                    'label'       => __('Feed Name', 'ffmauticaddon'),
+                    'required'    => true,
+                    'placeholder' => __('Your Feed Name', 'ffmauticaddon'),
+                    'component'   => 'text'
                 ],
                 [
-                    'key' => 'fields',
-                    'label' => 'Map Fields',
-                    'tips' => 'Select which Fluent Form fields pair with their<br /> respective Mautic fields.',
-                    'component' => 'map_fields',
-                    'field_label_remote' => 'Mautic Fields',
-                    'field_label_local' => 'Form Field',
-                    'primary_fileds' => [
+                    'key'                => 'fields',
+                    'label'              => 'Map Fields',
+                    'tips'               => __('Select which Fluent Form fields pair with their<br /> respective Mautic fields.', 'ffmauticaddon'),
+                    'component'          => 'map_fields',
+                    'field_label_remote' => __('Mautic Fields', 'ffmauticaddon'),
+                    'field_label_local'  => 'Form Field',
+                    'primary_fileds'     => [
                         [
-                            'key' => 'email',
-                            'label' => 'Email Address',
-                            'required' => true,
+                            'key'           => 'email',
+                            'label'         => __('Email Address', 'ffmauticaddon'),
+                            'required'      => true,
                             'input_options' => 'emails'
                         ]
                     ]
                 ],
                 [
-                    'key' => 'other_fields_mapping',
-                    'require_list' => false,
-                    'label' => 'Other Fields',
-                    'tips' => 'Select which Fluent Form fields pair with their<br /> respective Mautic fields.',
-                    'component' => 'dropdown_many_fields',
-                    'field_label_remote' => 'Mautic Field',
-                    'field_label_local' => 'Mautic Field',
-                    'options' => $this->otherFields()
+                    'key'                => 'other_fields_mapping',
+                    'require_list'       => false,
+                    'label'              => __('Other Fields', 'ffmauticaddon'),
+                    'tips'               => __('Select which Fluent Form fields pair with their<br /> respective Mautic fields.', 'ffmauticaddon'),
+                    'component'          => 'dropdown_many_fields',
+                    'field_label_remote' => __('Mautic Field', 'ffmauticaddon'),
+                    'field_label_local'  => __('Mautic Field', 'ffmauticaddon'),
+                    'options'            => $this->otherFields()
                 ],
                 [
-                    'key' => 'tags',
-                    'label' => 'Lead Tags',
-                    'required' => false,
-                    'placeholder' => 'Tags',
-                    'component' => 'value_text',
-                    'inline_tip' => 'Use comma separated value. You can use smart tags here'
+                    'key'         => 'tags',
+                    'label'       => __('Lead Tags', 'ffmauticaddon'),
+                    'required'    => false,
+                    'placeholder' => __('Tags', 'ffmauticaddon'),
+                    'component'   => 'value_text',
+                    'inline_tip'  => __('Use comma separated value. You can use smart tags here', 'ffmauticaddon')
                 ],
                 [
-                    'key' => 'last_active',
-                    'label' => 'Last Active',
-                    'tips' => 'When this option is enabled, FluentForm will pass the lead creation time to Mautic lead',
-                    'component' => 'checkbox-single',
-                    'checkbox_label' => 'Enable Last Active'
+                    'key'            => 'last_active',
+                    'label'          => __('Last Active', 'ffmauticaddon'),
+                    'tips'           => __('When this option is enabled, FluentForm will pass the lead creation time to Mautic lead', 'ffmauticaddon'),
+                    'component'      => 'checkbox-single',
+                    'checkbox_label' => __('Enable Last Active', 'ffmauticaddon')
                 ],
                 [
-                    'key' => 'last_seen_ip',
-                    'label' => 'Push IP Address',
-                    'tips' => 'When this option is enabled, FluentForm will pass the ipAddress to Mautic',
-                    'component' => 'checkbox-single',
-                    'checkbox_label' => 'Enable IP address'
+                    'key'            => 'last_seen_ip',
+                    'label'          => __('Push IP Address', 'ffmauticaddon'),
+                    'tips'           => __('When this option is enabled, FluentForm will pass the ipAddress to Mautic', 'ffmauticaddon'),
+                    'component'      => 'checkbox-single',
+                    'checkbox_label' => __('Enable IP address', 'ffmauticaddon')
                 ],
                 [
-                    'key' => 'conditionals',
-                    'label' => 'Conditional Logics',
-                    'tips' => 'Allow Mautic integration conditionally based on your submission values',
+                    'key'       => 'conditionals',
+                    'label'     => __('Conditional Logics', 'ffmauticaddon'),
+                    'tips'      => __('Allow Mautic integration conditionally based on your submission values', 'ffmauticaddon'),
                     'component' => 'conditional_block'
                 ],
                 [
-                    'key' => 'enabled',
-                    'label' => 'Status',
-                    'component' => 'checkbox-single',
-                    'checkbox_label' => 'Enable This feed'
+                    'key'            => 'enabled',
+                    'label'          => __('Status', 'ffmauticaddon'),
+                    'component'      => 'checkbox-single',
+                    'checkbox_label' => __('Enable This feed', 'ffmauticaddon')
                 ]
             ],
             'integration_title' => $this->title
@@ -279,10 +279,10 @@ class Bootstrap extends IntegrationManager
 
     public function otherFields()
     {
-        $api    = $this->getRemoteClient();
+        $api = $this->getRemoteClient();
         $fields = $api->listAvailableFields();  //get available fields from mautic including custom fields
 
-        if( !$fields ){
+        if (!$fields) {
             return [];
         }
 
@@ -290,9 +290,10 @@ class Bootstrap extends IntegrationManager
         usort($fields, function($a, $b) {
             return $a['id'] - $b['id'];
         });
+
         $fieldsFormatted = [];
         foreach ($fields as $field) {
-            $fieldsFormatted[$field['alias']] = $field['label'] ;
+            $fieldsFormatted[$field['alias']] = $field['label'];
         }
 
         unset($fieldsFormatted['email']);
@@ -306,12 +307,11 @@ class Bootstrap extends IntegrationManager
     {
         $feedData = $feed['processedValues'];
 
-
         $subscriber = [
-            'name' => ArrayHelper::get($feedData, 'lead_name'),
-            'email' => ArrayHelper::get($feedData, 'email'),
-            'phone' => ArrayHelper::get($feedData, 'phone'),
-            'created_at' => time(),
+            'name'         => ArrayHelper::get($feedData, 'lead_name'),
+            'email'        => ArrayHelper::get($feedData, 'email'),
+            'phone'        => ArrayHelper::get($feedData, 'phone'),
+            'created_at'   => time(),
             'last_seen_at' => time()
         ];
 
@@ -343,7 +343,6 @@ class Bootstrap extends IntegrationManager
             $subscriber[$item['label']] = $item['item_value'];
         }
 
-
         if (!is_email($subscriber['email'])) {
             return;
         }
@@ -355,23 +354,23 @@ class Bootstrap extends IntegrationManager
             // it's failed
             do_action('ff_log_data', [
                 'parent_source_id' => $form->id,
-                'source_type' => 'submission_item',
-                'source_id' => $entry->id,
-                'component' => $this->integrationKey,
-                'status' => 'failed',
-                'title' => $feed['settings']['name'],
-                'description' => $response->errors['error'][0][0]['message']
+                'source_type'      => 'submission_item',
+                'source_id'        => $entry->id,
+                'component'        => $this->integrationKey,
+                'status'           => 'failed',
+                'title'            => $feed['settings']['name'],
+                'description'      => $response->errors['error'][0][0]['message']
             ]);
         } else {
             // It's success
             do_action('ff_log_data', [
                 'parent_source_id' => $form->id,
-                'source_type' => 'submission_item',
-                'source_id' => $entry->id,
-                'component' => $this->integrationKey,
-                'status' => 'success',
-                'title' => $feed['settings']['name'],
-                'description' => 'Mautic feed has been successfully initialed and pushed data'
+                'source_type'      => 'submission_item',
+                'source_id'        => $entry->id,
+                'component'        => $this->integrationKey,
+                'status'           => 'success',
+                'title'            => $feed['settings']['name'],
+                'description'      => 'Mautic feed has been successfully initialed and pushed data'
             ]);
         }
     }
@@ -388,7 +387,8 @@ class Bootstrap extends IntegrationManager
                 </li>
                 <li>Then go to "Api Credentials" and create a new oAuth 2 credentials with a redirect url (Your site
                     dashboard url with this slug /?ff_mautic_auth=1)<br/>
-                    Your app redirect url will be <b><?php echo admin_url('?ff_mautic_auth=1'); ?></b>
+                    Your app redirect url will be <b><?php
+                        echo admin_url('?ff_mautic_auth=1'); ?></b>
 
                 </li>
                 <li>Paste your Mautic account URL on Mautic API URL, also paste the Client Id and Secret Id. Then click
@@ -408,5 +408,4 @@ class Bootstrap extends IntegrationManager
             $settings
         );
     }
-
 }

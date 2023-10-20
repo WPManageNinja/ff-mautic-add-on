@@ -1,6 +1,6 @@
 <?php
 
-namespace  FluentFormMautic\Integrations;
+namespace FluentFormMautic\Integrations;
 
 class API
 {
@@ -30,12 +30,12 @@ class API
     public function redirectToAuthServer()
     {
         $url = add_query_arg([
-            'client_id' => $this->clientId,
-            'grant_type' => 'authorization_code',
-            'redirect_uri' => $this->callBackUrl,
+            'client_id'     => $this->clientId,
+            'grant_type'    => 'authorization_code',
+            'redirect_uri'  => $this->callBackUrl,
             'response_type' => 'code',
-            'state' => md5($this->clientId)
-        ], $this->apiUrl.'/oauth/v2/authorize');
+            'state'         => md5($this->clientId)
+        ], $this->apiUrl . '/oauth/v2/authorize');
 
         wp_redirect($url);
         exit();
@@ -43,7 +43,7 @@ class API
 
     public function generateAccessToken($code, $settings)
     {
-        $response = wp_remote_post($this->apiUrl.'/oauth/v2/token', [
+        $response = wp_remote_post($this->apiUrl . '/oauth/v2/token', [
             'body' => [
                 'client_id'     => $this->clientId,
                 'client_secret' => $this->clientSecret,
@@ -77,15 +77,20 @@ class API
             return $settings;
         }
 
-        $url = $this->apiUrl.'/api/'.$action;
+        $url = $this->apiUrl . '/api/' . $action;
 
-        $data['access_token'] = $settings['access_token'];
+        $headers = [
+            'Authorization'  => " Bearer ". $settings['access_token'],
+        ];
+
         $response = false;
         if ($method == 'GET') {
-            $url = add_query_arg($data, $url);
-            $response = wp_remote_get($url);
-        } else if ($method == 'POST') {
+            $response = wp_remote_get($url, [
+                'headers' => $headers
+            ]);
+        } elseif ($method == 'POST') {
             $response = wp_remote_post($url, [
+                'headers' => $headers,
                 'body' => $data
             ]);
         }
@@ -104,7 +109,7 @@ class API
         if (isset($body['errrors'])) {
             if (!empty($body['errrors'][0]['description'])) {
                 $message = $body['errrors'][0]['description'];
-            } else if (!empty($body['error_description'])) {
+            } elseif (!empty($body['error_description'])) {
                 $message = $body['error_description'];
             } else {
                 $message = 'Error when requesting to API Server';
@@ -127,14 +132,14 @@ class API
         }
 
         return array(
-            'baseUrl'          => $this->apiUrl,       // Base URL of the Mautic instance
-            'version'          => 'OAuth2', // Version of the OAuth can be OAuth2 or OAuth1a. OAuth2 is the default value.
-            'clientKey'        => $this->clientId,       // Client/Consumer key from Mautic
-            'clientSecret'     => $this->clientSecret,       // Client/Consumer secret key from Mautic
-            'callback'         => $this->callBackUrl,        // Redirect URI/Callback URI for this script
-            'access_token' => $apiSettings['access_token'],
+            'baseUrl'       => $this->apiUrl,       // Base URL of the Mautic instance
+            'version'       => 'OAuth2', // Version of the OAuth can be OAuth2 or OAuth1a. OAuth2 is the default value.
+            'clientKey'     => $this->clientId,       // Client/Consumer key from Mautic
+            'clientSecret'  => $this->clientSecret,       // Client/Consumer secret key from Mautic
+            'callback'      => $this->callBackUrl,        // Redirect URI/Callback URI for this script
+            'access_token'  => $apiSettings['access_token'],
             'refresh_token' => $apiSettings['refresh_token'],
-            'expire_at' => $apiSettings['expire_at']
+            'expire_at'     => $apiSettings['expire_at']
         );
     }
 
@@ -145,7 +150,7 @@ class API
 
         if ($expireAt && $expireAt <= (time() - 10)) {
             // we have to regenerate the tokens
-            $response = wp_remote_post($this->apiUrl.'/oauth/v2/token', [
+            $response = wp_remote_post($this->apiUrl . '/oauth/v2/token', [
                 'body' => [
                     'client_id'     => $this->clientId,
                     'client_secret' => $this->clientSecret,
@@ -172,7 +177,7 @@ class API
     {
         $response = $this->makeRequest('contacts/list/fields', [], 'GET');
 
-        if(!is_wp_error ($response)){
+        if (!is_wp_error($response)) {
             return $response;
         };
 
