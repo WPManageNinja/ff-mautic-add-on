@@ -58,7 +58,7 @@ class Bootstrap extends IntegrationManager
         return [
             'logo'               => $this->logo,
             'menu_title'         => __('Mautic Settings', 'ffmauticaddon'),
-            'menu_description'   => $this->description,
+            'menu_description'   => __($this->description,'ffmauticaddon'),
             'valid_message'      => __('Your Mautic API Key is valid', 'ffmauticaddon'),
             'invalid_message'    => __('Your Mautic API Key is not valid', 'ffmauticaddon'),
             'save_button_text'   => __('Save Settings', 'ffmauticaddon'),
@@ -66,20 +66,20 @@ class Bootstrap extends IntegrationManager
             'fields'             => [
                 'apiUrl'        => [
                     'type'        => 'text',
-                    'placeholder' => 'Your Mautic Installation URL',
+                    'placeholder' => __('Your Mautic Installation URL', 'ffmauticaddon'),
                     'label_tips'  => __("Please provide your Mautic Installation URL", 'ffmauticaddon'),
                     'label'       => __('Your Mautic API URL', 'ffmauticaddon'),
                 ],
                 'client_id'     => [
                     'type'        => 'text',
-                    'placeholder' => 'Mautic App Client ID',
+                    'placeholder' => __('Mautic App Client ID', 'ffmauticaddon'),
                     'label_tips'  => __("Enter your Mautic Client ID, if you do not have <br>Please login to your Mautic account and go to<br>Settings -> Integrations -> API key",
                         'ffmauticaddon'),
                     'label'       => __('Mautic Client ID', 'ffmauticaddon'),
                 ],
                 'client_secret' => [
                     'type'        => 'password',
-                    'placeholder' => 'Mautic App Client Secret',
+                    'placeholder' => __('Mautic App Client Secret', 'ffmauticaddon'),
                     'label_tips'  => __("Enter your Mautic API Key, if you do not have <br>Please login to your Mautic account and go to<br>Settings -> Integrations -> API key",
                         'ffmauticaddon'),
                     'label'       => __('Mautic Client Secret', 'ffmauticaddon'),
@@ -370,7 +370,7 @@ class Bootstrap extends IntegrationManager
                 'component'        => $this->integrationKey,
                 'status'           => 'success',
                 'title'            => $feed['settings']['name'],
-                'description'      => 'Mautic feed has been successfully initialed and pushed data'
+                'description'      => __('Mautic feed has been successfully initialed and pushed data', 'ffmauticaddon')
             ]);
         }
     }
