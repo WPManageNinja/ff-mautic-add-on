@@ -106,9 +106,9 @@ class API
         $body = wp_remote_retrieve_body($response);
         $body = \json_decode($body, true);
 
-        if (isset($body['errrors'])) {
-            if (!empty($body['errrors'][0]['description'])) {
-                $message = $body['errrors'][0]['description'];
+        if (isset($body['errors'])) {
+            if (!empty($body['errors'][0]['message'])) {
+                $message = $body['errors'][0]['message'];
             } elseif (!empty($body['error_description'])) {
                 $message = $body['error_description'];
             } else {
@@ -123,7 +123,8 @@ class API
 
     protected function getApiSettings()
     {
-        $this->maybeRefreshToken();
+        $response = $this->maybeRefreshToken();
+        if (is_wp_error($response)) return $response;
 
         $apiSettings = $this->settings;
 
@@ -163,7 +164,20 @@ class API
             $body = wp_remote_retrieve_body($response);
             $body = \json_decode($body, true);
 
-            if (!is_wp_error($response) || !isset($body['errors'])) {
+            if (is_wp_error($response)) return $response;
+            if (isset($body['errors'])) {
+                if (!empty($body['errors'][0]['message'])) {
+                    $message = $body['errors'][0]['message'];
+                } elseif (!empty($body['error_description'])) {
+                    $message = $body['error_description'];
+                } else {
+                    $message = 'Error when requesting OAuth token';
+                }
+    
+                return new \WP_Error('request_error', $message);
+            }
+            else
+            {
                 $settings['access_token'] = $body['access_token'];
                 $settings['refresh_token'] = $body['refresh_token'];
                 $settings['expire_at'] = time() + intval($body['expires_in']);
