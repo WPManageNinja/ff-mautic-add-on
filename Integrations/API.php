@@ -61,7 +61,7 @@ class API
         $body = \json_decode($body, true);
 
         if (isset($body['error_description'])) {
-            return new \WP_Error('invalid_client', $body['error_description']);
+            return new \WP_Error(423, $body['error_description']);
         }
 
         $settings['access_token'] = $body['access_token'];
@@ -96,26 +96,27 @@ class API
         }
 
         if (!$response) {
-            return new \WP_Error('invalid', 'Request could not be performed');
+            return new \WP_Error(423, __('Request could not be performed', 'ffmauticaddon'));
         }
 
         if (is_wp_error($response)) {
-            return new \WP_Error('wp_error', $response->get_error_message());
+            return new \WP_Error(423, $response->get_error_message());
         }
 
         $body = wp_remote_retrieve_body($response);
         $body = \json_decode($body, true);
+        $code = wp_remote_retrieve_response_code($response);
 
-        if (isset($body['errrors'])) {
-            if (!empty($body['errrors'][0]['description'])) {
-                $message = $body['errrors'][0]['description'];
+        if (isset($body['errors'])) {
+            if (!empty($body['errors'][0]['message'])) {
+                $message = $body['errors'][0]['message'];
             } elseif (!empty($body['error_description'])) {
                 $message = $body['error_description'];
             } else {
-                $message = 'Error when requesting to API Server';
+                $message = __('Error when requesting to API Server', 'ffmauticaddon');
             }
 
-            return new \WP_Error('request_error', $message);
+            return new \WP_Error($code, $message);
         }
 
         return $body;
@@ -123,12 +124,16 @@ class API
 
     protected function getApiSettings()
     {
-        $this->maybeRefreshToken();
+        $response = $this->maybeRefreshToken();
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
 
         $apiSettings = $this->settings;
 
         if (!$apiSettings['status'] || !$apiSettings['expire_at']) {
-            return new \WP_Error('invalid', 'API key is invalid');
+            return new \WP_Error(423, __('API key is invalid', 'ffmauticaddon'));
         }
 
         return array(
@@ -163,13 +168,28 @@ class API
             $body = wp_remote_retrieve_body($response);
             $body = \json_decode($body, true);
 
-            if (!is_wp_error($response) || !isset($body['errors'])) {
-                $settings['access_token'] = $body['access_token'];
-                $settings['refresh_token'] = $body['refresh_token'];
-                $settings['expire_at'] = time() + intval($body['expires_in']);
-                $this->settings = $settings;
-                update_option('_fluentform_mautic_settings', $settings, 'no');
+            if (is_wp_error($response)) {
+                return $response;
             }
+
+            if (isset($body['errors'])) {
+                if (!empty($body['errors'][0]['message'])) {
+                    $message = $body['errors'][0]['message'];
+                } elseif (!empty($body['error_description'])) {
+                    $message = $body['error_description'];
+                } else {
+                    $message = 'Error when requesting OAuth token';
+                }
+
+                return new \WP_Error(423, $message);
+            }
+
+            $settings['access_token'] = $body['access_token'];
+            $settings['refresh_token'] = $body['refresh_token'];
+            $settings['expire_at'] = time() + intval($body['expires_in']);
+            $this->settings = $settings;
+            update_option('_fluentform_mautic_settings', $settings, 'no');
+            return true;
         }
     }
 
@@ -189,13 +209,13 @@ class API
         $response = $this->makeRequest('contacts/new', $subscriber, 'POST');
 
         if (is_wp_error($response)) {
-            return new \WP_Error('error', $response->errors);
+            return new \WP_Error($response->get_error_code(), $response->get_error_message());
         }
 
         if ($response['contact']["id"]) {
             return $response;
         }
 
-        return new \WP_Error('error', $response->errors);
+        return new \WP_Error(423, __('Could not create subscriber', 'ffmauticaddon'));
     }
 }
