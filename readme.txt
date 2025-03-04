@@ -2,7 +2,7 @@
 Contributors: techjewel,wpmanageninja,hasanuzzamanshamim
 Tags: Integration, Mautic, Form, Integration
 Requires at least: 5.0
-Tested up to: 6.3.2
+Tested up to: 6.7
 Requires PHP: 7.1
 Stable tag: 1.0.4
 License: GPLv2 or later
@@ -19,7 +19,7 @@ Connecting with WordPress forms make your life and automation process more easy.
 
 === Mautic for FluentForms Features ===
 - Secure connection with FluentForms
-- Easy to integrate with your Mautic Api 
+- Easy to integrate with your Mautic Api
 - oAuth2 with V3 implementation
 - Custom fields mapping
 
