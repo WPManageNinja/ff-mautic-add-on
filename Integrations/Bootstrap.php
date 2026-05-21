@@ -388,7 +388,7 @@ class Bootstrap extends IntegrationManager
                 <li>Then go to "Api Credentials" and create a new oAuth 2 credentials with a redirect url (Your site
                     dashboard url with this slug /?ff_mautic_auth=1)<br/>
                     Your app redirect url will be <b><?php
-                        echo admin_url('?ff_mautic_auth=1'); ?></b>
+                        echo esc_url( admin_url('?ff_mautic_auth=1') ); ?></b>
 
                 </li>
                 <li>Paste your Mautic account URL on Mautic API URL, also paste the Client Id and Secret Id. Then click
