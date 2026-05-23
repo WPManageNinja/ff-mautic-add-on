@@ -5,7 +5,7 @@
  * Description: Integrate your mautic with Fluentform.
  * Author: WPManageNinja LLC
  * Author URI:  https://wpmanageninja.com
- * Version: 1.0.4
+ * Version: 1.0.5
  * Text Domain: ffmauticaddon
  */
 
@@ -75,10 +75,13 @@ class FluentFormMautic
                 $install_url_text = 'Click Here to Activate the Plugin';
             }
 
-            $message = 'FluentForm Mautic Add-On Requires Fluent Forms Add On Plugin, <b><a href="' . $pluginInfo->url
-                . '">' . $install_url_text . '</a></b>';
-
-            printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), $message);
+            printf(
+                '<div class="%1$s"><p>%2$s, <b><a href="%3$s">%4$s</a></b></p></div>',
+                esc_attr($class),
+                esc_html('FluentForm Mautic Add-On Requires Fluent Forms Add On Plugin'),
+                esc_url($pluginInfo->url),
+                esc_html($install_url_text)
+            );
         });
     }
 
