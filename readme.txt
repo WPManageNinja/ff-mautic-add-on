@@ -4,7 +4,7 @@ Tags: Integration, Mautic, Form, Integration
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,6 +65,10 @@ Install From WordPress Admin Panel:
 4. Single form mapping with Mautic
 
 == Changelog ==
+= 1.0.6 =
+* Security Fix: Require manage_options capability on the Mautic OAuth callback (/?ff_mautic_auth=1), which was previously reachable by any logged-in user and could overwrite the site's global Mautic connection
+* Security Fix: Enforce the oAuth state parameter as a verified nonce to prevent CSRF-based authorization code injection during the Mautic connect flow
+
 = 1.0.5 =
 * WordPress 7.0 Support Added
 * Security Fix: Escape admin notice output and config page URL to prevent XSS

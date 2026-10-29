@@ -29,8 +29,16 @@ class Bootstrap extends IntegrationManager
 
         add_action('admin_init', function() {
             if (isset($_REQUEST['ff_mautic_auth'])) {
+                if (!current_user_can('manage_options')) {
+                    wp_die(__('You do not have permission to perform this action.', 'ffmauticaddon'), 403);
+                }
+
                 $client = $this->getRemoteClient();
                 if (isset($_REQUEST['code'])) {
+                    if (empty($_REQUEST['state']) || !wp_verify_nonce(sanitize_text_field($_REQUEST['state']), 'ff_mautic_oauth')) {
+                        wp_die(__('This authentication request has expired or is invalid. Please try connecting again.', 'ffmauticaddon'), 403);
+                    }
+
                     // Get the access token now
                     $code = sanitize_text_field($_REQUEST['code']);
                     $settings = $this->getGlobalSettings([]);
