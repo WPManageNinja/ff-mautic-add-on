@@ -66,8 +66,7 @@ Install From WordPress Admin Panel:
 
 == Changelog ==
 = 1.0.6 =
-* Security Fix: Require manage_options capability on the Mautic OAuth callback (/?ff_mautic_auth=1), which was previously reachable by any logged-in user and could overwrite the site's global Mautic connection
-* Security Fix: Enforce the oAuth state parameter as a verified nonce to prevent CSRF-based authorization code injection during the Mautic connect flow
+* Security Fix: Hardened permission and validation checks on the Mautic authentication flow
 
 = 1.0.5 =
 * WordPress 7.0 Support Added
