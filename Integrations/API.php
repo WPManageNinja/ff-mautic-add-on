@@ -34,7 +34,7 @@ class API
             'grant_type'    => 'authorization_code',
             'redirect_uri'  => $this->callBackUrl,
             'response_type' => 'code',
-            'state'         => md5($this->clientId)
+            'state'         => wp_create_nonce('ff_mautic_oauth')
         ], $this->apiUrl . '/oauth/v2/authorize');
 
         wp_redirect($url);
