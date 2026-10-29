@@ -2,6 +2,7 @@
 
 namespace FluentFormMautic\Integrations;
 
+use FluentForm\App\Modules\Acl\Acl;
 use FluentForm\App\Services\Integrations\IntegrationManager;
 use FluentForm\Framework\Foundation\Application;
 use FluentForm\Framework\Helpers\ArrayHelper;
@@ -29,7 +30,7 @@ class Bootstrap extends IntegrationManager
 
         add_action('admin_init', function() {
             if (isset($_REQUEST['ff_mautic_auth'])) {
-                if (!current_user_can('manage_options')) {
+                if (!Acl::hasPermission('fluentform_settings_manager')) {
                     wp_die(__('You do not have permission to perform this action.', 'ffmauticaddon'), 403);
                 }
 
