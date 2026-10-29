@@ -66,7 +66,7 @@ Install From WordPress Admin Panel:
 
 == Changelog ==
 = 1.0.6 =
-* Security Fix: Hardened permission and validation checks on the Mautic authentication flow
+* Security Fix: Improved security for the Mautic authentication flow
 
 = 1.0.5 =
 * WordPress 7.0 Support Added
